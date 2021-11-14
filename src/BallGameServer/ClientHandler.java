@@ -20,18 +20,19 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-        game.createPlayer();
-        int playerId = game.latestId -1;
+
+        int playerId = -1;
         try(
                 Scanner scanner = new Scanner(socket.getInputStream());
                 PrintWriter writer = new PrintWriter(socket.getOutputStream(), true))
         {
-
-            for (PrintWriter printWriter: ServerProgram.writers.values()
+            Player player = game.createPlayer(writer);
+            playerId = player.id;
+            for (Player player1: game.players.values()
                  ) {
-                printWriter.println("Player "+ playerId + " has joined!");
+                PrintWriter printWriter = player1.writer;
+                printWriter.println("Player "+ playerId + " has joined the game!");
             }
-            ServerProgram.writers.put(playerId, writer);
 
             try{
                 boolean keepGoing = true;
@@ -50,11 +51,16 @@ public class ClientHandler implements Runnable {
                                 try {
                                     int passPlayer = Integer.parseInt(substrings[1]);
                                     boolean passedBall = false;
-                                    for (Player player : game.players.values())
-                                        if (player.getId() == passPlayer) {
+                                    for (Player player1 : game.players.values())
+                                        if (player1.getId() == passPlayer) {
                                             game.passBall(playerId, passPlayer);
                                             writer.println("You passed the ball to " + game.players.get(passPlayer).getId());
                                             passedBall = true;
+                                            for (Player player2: game.players.values()
+                                                 ) {
+                                                PrintWriter printWriter = player2.writer;
+                                                printWriter.println(player.id + " passed the ball to " + passPlayer + "!");
+                                            }
                                         }
                                     if (!passedBall)
                                         writer.println("No such player!");
@@ -73,8 +79,8 @@ public class ClientHandler implements Runnable {
                             keepGoing = false;
                             break;
                         case "show_ball":
-                            for (Player player : game.players.values())
-                            {writer.println(player.getId());
+                            for (Player player1 : game.players.values())
+                            {writer.println(player1.getId());
                                 if (player.hasBall)
                             writer.println(player.getId() + " has the ball.");}
                             break;
@@ -101,9 +107,9 @@ public class ClientHandler implements Runnable {
         finally {
             game.playerLeft(playerId);
             System.out.println("Player " + playerId + " disconnected.");
-            ServerProgram.writers.remove(playerId);
-            for (PrintWriter printWriter: ServerProgram.writers.values()
+            for (Player player : game.players.values()
                  ) {
+                PrintWriter printWriter = player.writer;
                 printWriter.println("Player " + playerId + " has left the game!");
             }
             //broadcast to all players

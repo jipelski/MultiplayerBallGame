@@ -1,5 +1,6 @@
 package BallGameServer;
 
+import java.io.PrintWriter;
 import java.util.*;
 
 /** Game class keeps track of players and allows passing.*/
@@ -14,9 +15,9 @@ public class Game {
     /** Creates a player object and adds it to the players tree map.
      *  Checks if there are no other players in the game.
      *  If there aren't any other players passes the ball to the new player.*/
-    public void createPlayer()
+    public Player createPlayer(PrintWriter writer)
     {
-        Player player = new Player(latestId);
+        Player player = new Player(latestId, writer);
         if(!ballOwned)
         {
             players.put(latestId, player);
@@ -29,6 +30,7 @@ public class Game {
             player.hasBall = false;
         }
         latestId++;
+        return player;
     }
 
     /** Removes the player that left from the tree map. Checks if the player that left had the ball.
