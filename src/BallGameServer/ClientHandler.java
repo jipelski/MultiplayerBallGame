@@ -81,8 +81,8 @@ public class ClientHandler implements Runnable {
                         case "show_ball":
                             for (Player player1 : game.players.values())
                             {writer.println(player1.getId());
-                                if (player.hasBall)
-                            writer.println(player.getId() + " has the ball.");}
+                                if (player1.hasBall)
+                            writer.println(player1.getId() + " has the ball.");}
                             break;
 
                         default:
