@@ -17,20 +17,24 @@ public class Game {
      *  If there aren't any other players passes the ball to the new player.*/
     public Player createPlayer(PrintWriter writer)
     {
-        Player player = new Player(latestId, writer);
-        if(!ballOwned)
+        synchronized (players)
         {
-            players.put(latestId, player);
-            passBall(-1, latestId);
-            player.hasBall = true;
-            ballOwned = true;
+            Player player = new Player(latestId, writer);
+            if(!ballOwned)
+            {
+                players.put(latestId, player);
+                passBall(-1, latestId);
+                player.hasBall = true;
+                ballOwned = true;
+            }
+            else {
+                players.put(latestId, player);
+                player.hasBall = false;
+            }
+            latestId++;
+            return player;
         }
-        else {
-            players.put(latestId, player);
-            player.hasBall = false;
-        }
-        latestId++;
-        return player;
+
     }
 
     /** Removes the player that left from the tree map. Checks if the player that left had the ball.
@@ -38,34 +42,40 @@ public class Game {
      * Catches exception where the player that left was the last player in the game*/
     public void playerLeft(int playerId)
     {
-        try{
-            if(players.get(playerId).hasBall)
-            {
-                players.remove(playerId);
-                if(players.size() != 0)
+        synchronized (players)
+        {
+            try{
+                if(players.get(playerId).hasBall)
                 {
-                    /** Creates a list of players that are currently in the game.
-                     * Uses this list to randomly allocate the new owner of the ball.*/
-                    List<Player> actualPlayers = new ArrayList(players.values());
-                    Random rand = new Random();
-                    actualPlayers.get(rand.nextInt(actualPlayers.size())).hasBall = true;
-                    ballOwned = true;
+                    players.remove(playerId);
+                    if(players.size() != 0)
+                    {
+                        /** Creates a list of players that are currently in the game.
+                         * Uses this list to randomly allocate the new owner of the ball.*/
+                        List<Player> actualPlayers = new ArrayList(players.values());
+                        Random rand = new Random();
+                        int randomPlayer = rand.nextInt(actualPlayers.size());
+                        actualPlayers.get(randomPlayer).hasBall = true;
+                        ballOwned = true;
+                    }
+                    else
+                    ballOwned = false;
+                    //broadcast the passing of the ball to the other players and the leaving of the player
+
                 }
                 else
-                    ballOwned = false;
-                //broadcast the passing of the ball to the other players and the leaving of the player
+                    players.remove(playerId);
 
+                //broadcast the leaving of the player
             }
-            else
-                players.remove(playerId);
+            catch (Exception e)
+            {
+                System.out.println(e);
+                System.out.println("Player doesnt exist!");
+            }
+        }
 
-            //broadcast the leaving of the player
-        }
-        catch (Exception e)
-        {
-            System.out.println(e);
-            System.out.println("Player doesnt exist!");
-        }
+
 
 
 

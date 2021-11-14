@@ -11,8 +11,6 @@ public class ClientHandler implements Runnable {
     private final Socket socket;
     private Game game;
 
-
-
     public ClientHandler(Socket socket, Game game) {
         this.socket = socket;
         this.game = game;
@@ -105,12 +103,28 @@ public class ClientHandler implements Runnable {
         {
         }
         finally {
-            game.playerLeft(playerId);
+            boolean newOwner = false;
+            int newOwnerId = -1;
+            if(game.players.get(playerId).hasBall) {
+                newOwner = true;
+                game.playerLeft(playerId);
+                for (Player player: game.players.values()
+                     ) {
+                    if(player.hasBall)
+                        newOwnerId = player.id;
+                }
+            }
+            else
+                game.playerLeft(playerId);
+
             System.out.println("Player " + playerId + " disconnected.");
             for (Player player : game.players.values()
                  ) {
                 PrintWriter printWriter = player.writer;
                 printWriter.println("Player " + playerId + " has left the game!");
+                if(newOwner)
+                    printWriter.println("Player " + newOwnerId + " has the ball now!");
+
             }
             //broadcast to all players
         }
