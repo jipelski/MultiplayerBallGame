@@ -20,15 +20,12 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-
-        int playerId = -1;
+        game.createPlayer();
+        int playerId = game.latestId -1;
         try(
                 Scanner scanner = new Scanner(socket.getInputStream());
                 PrintWriter writer = new PrintWriter(socket.getOutputStream(), true))
         {
-
-            game.createPlayer(writer);
-            playerId = game.latestId-1;
 
             for (PrintWriter printWriter: ServerProgram.writers.values()
                  ) {
@@ -72,7 +69,6 @@ public class ClientHandler implements Runnable {
                             break;
 
                         case "leave":
-                            game.playerLeft(playerId);
                             writer.println("GOODBYE");
                             keepGoing = false;
                             break;
