@@ -1,13 +1,10 @@
 package BallGameServer;
 
-import com.sun.prism.shader.AlphaOne_Color_AlphaTest_Loader;
-import com.sun.security.ntlm.Client;
-
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /** Server main class which uses a while loop to keep the server process running indefinitely.
  *  It creates a main thread for the server and additional threads for each player that joins the game.*/
@@ -15,7 +12,10 @@ import java.util.List;
 public class ServerProgram {
 
     private final static int port = 8888;
-    static List<Thread> players = new ArrayList<>();
+
+    private static final Game game = new Game();
+
+    public static Map<Integer, PrintWriter> writers = new HashMap<>();
 
     /** Main method. Creates the main thread and runs the RunServer method*/
     public static void main (String [] args)
@@ -23,20 +23,18 @@ public class ServerProgram {
         RunServer();
     }
 
-    static Broadcast broadcast = new Broadcast("I am Alive");
-
     /** Method that runs indefinitely and creates additional threads for each player that joins the game. */
     private static void RunServer() {
-        ServerSocket serverSocket = null;
+        ServerSocket serverSocket;
 
         try{
             serverSocket = new ServerSocket(port);
             System.out.println("Server running. Waiting for players...");
             while (true) {
+
+                //Synchronize the threads to dont lose or get the wrong player Id
                 Socket socket = serverSocket.accept();
-                Thread playerThread = new Thread(new ClientHandler(socket));
-                playerThread.start();
-                players.add(playerThread);
+                new Thread(new ClientHandler(socket, game)).start();
             }
         }
         catch (IOException e)
@@ -44,6 +42,8 @@ public class ServerProgram {
             e.printStackTrace();
         }
     }
+
+
 
 
 }
