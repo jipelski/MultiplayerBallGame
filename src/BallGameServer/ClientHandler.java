@@ -20,12 +20,15 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-        game.createPlayer();
-        int playerId = game.latestId-1;
+
+        int playerId = -1;
         try(
                 Scanner scanner = new Scanner(socket.getInputStream());
                 PrintWriter writer = new PrintWriter(socket.getOutputStream(), true))
         {
+
+            game.createPlayer(writer);
+            playerId = game.latestId-1;
 
             for (PrintWriter printWriter: ServerProgram.writers.values()
                  ) {
