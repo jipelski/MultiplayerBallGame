@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class ClientHandler implements Runnable {
 
     private final Socket socket;
-    private Game game;
+    private final Game game;
 
     public ClientHandler(Socket socket, Game game) {
         this.socket = socket;
@@ -26,16 +26,27 @@ public class ClientHandler implements Runnable {
         {
             Player player = game.createPlayer(writer);
             playerId = player.id;
+            player.writer.println(playerId);
             for (Player player1: game.players.values()
-                 ) {
+            ) {
                 PrintWriter printWriter = player1.writer;
-                printWriter.println("Player "+ playerId + " has joined the game!");
+                printWriter.println(playerId);
+                printWriter.println(game.players.size());
+                int playerWithBall = -1;
+                for (Player player2: game.players.values()
+                ) {
+                    printWriter.println(player2.getId());
+                    if(player2.hasBall)
+                    {
+                        playerWithBall = player2.id;
+                    }
+                }
+                printWriter.println(playerWithBall);
             }
 
             try{
                 boolean keepGoing = true;
                 System.out.println("Player " + playerId + " connected!");
-                writer.println("CONNECTED");
 
                 while(keepGoing)
                 {
@@ -43,6 +54,7 @@ public class ClientHandler implements Runnable {
                     String[] substrings = line.split(" ");
                     switch (substrings[0].toLowerCase())
                     {
+
                         case "pass":
                             if(game.players.get(playerId).hasBall)
                             {
@@ -103,28 +115,21 @@ public class ClientHandler implements Runnable {
         {
         }
         finally {
-            boolean newOwner = false;
-            int newOwnerId = -1;
-            if(game.players.get(playerId).hasBall) {
-                newOwner = true;
-                game.playerLeft(playerId);
-                for (Player player: game.players.values()
-                     ) {
-                    if(player.hasBall)
-                        newOwnerId = player.id;
-                }
-            }
-            else
-                game.playerLeft(playerId);
+            game.playerLeft(playerId);
 
             System.out.println("Player " + playerId + " disconnected.");
             for (Player player : game.players.values()
                  ) {
                 PrintWriter printWriter = player.writer;
                 printWriter.println("Player " + playerId + " has left the game!");
-                if(newOwner)
-                    printWriter.println("Player " + newOwnerId + " has the ball now!");
-
+                for (Player player2: game.players.values()
+                ) {
+                    printWriter.println(player2.getId());
+                    if(player2.hasBall)
+                    {
+                        printWriter.println(player2.getId() + " has the ball.");
+                    }
+                }
             }
             //broadcast to all players
         }

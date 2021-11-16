@@ -3,7 +3,7 @@ package BallGameServer;
 import java.io.PrintWriter;
 import java.util.*;
 
-/** Game class keeps track of players and allows passing.*/
+/** Game class keeps track of players, creates and removes players and also allows passing.*/
 
 public class Game {
     public final Map<Integer, Player> players = new TreeMap<>();
@@ -50,8 +50,6 @@ public class Game {
                     players.remove(playerId);
                     if(players.size() != 0)
                     {
-                        /** Creates a list of players that are currently in the game.
-                         * Uses this list to randomly allocate the new owner of the ball.*/
                         List<Player> actualPlayers = new ArrayList(players.values());
                         Random rand = new Random();
                         int randomPlayer = rand.nextInt(actualPlayers.size());
