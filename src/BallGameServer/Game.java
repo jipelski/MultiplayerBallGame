@@ -37,6 +37,7 @@ public class Game {
 
     }
 
+
     /** Removes the player that left from the tree map. Checks if the player that left had the ball.
      * If the player that left had the ball it passes the ball to a random player.
      * Catches exception where the player that left was the last player in the game*/

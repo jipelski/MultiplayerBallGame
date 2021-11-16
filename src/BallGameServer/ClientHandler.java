@@ -26,27 +26,33 @@ public class ClientHandler implements Runnable {
         {
             Player player = game.createPlayer(writer);
             playerId = player.id;
-            player.writer.println(playerId);
+
+            System.out.println("Player " + playerId + " connected!");
+
+            player.writer.println("You are player number " + playerId);
             for (Player player1: game.players.values()
             ) {
                 PrintWriter printWriter = player1.writer;
-                printWriter.println(playerId);
-                printWriter.println(game.players.size());
+                printWriter.println(playerId + " joined!");
+                printWriter.println("Currently playing " + game.players.size() + " players");
+                System.out.println("Currently playing " + game.players.size() + " players:");
                 int playerWithBall = -1;
                 for (Player player2: game.players.values()
                 ) {
                     printWriter.println(player2.getId());
+                    System.out.print(player2.getId() + " ");
                     if(player2.hasBall)
                     {
                         playerWithBall = player2.id;
                     }
                 }
-                printWriter.println(playerWithBall);
+                System.out.println();
+                printWriter.println(playerWithBall + " has the ball");
+                System.out.println(playerWithBall + " has the ball");
             }
 
             try{
                 boolean keepGoing = true;
-                System.out.println("Player " + playerId + " connected!");
 
                 while(keepGoing)
                 {
@@ -70,7 +76,9 @@ public class ClientHandler implements Runnable {
                                                  ) {
                                                 PrintWriter printWriter = player2.writer;
                                                 printWriter.println(player.id + " passed the ball to " + passPlayer + "!");
+
                                             }
+                                            System.out.println(player.id + " passed the ball to " + passPlayer);
                                         }
                                     if (!passedBall)
                                         writer.println("No such player!");
@@ -128,6 +136,7 @@ public class ClientHandler implements Runnable {
                     if(player2.hasBall)
                     {
                         printWriter.println(player2.getId() + " has the ball.");
+                        System.out.println(player2.getId() + " has the ball.");
                     }
                 }
             }
