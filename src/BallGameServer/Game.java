@@ -61,7 +61,6 @@ public class Game {
                     players.remove(playerId);
 
             } catch (Exception e) {
-                System.out.println(e);
                 System.out.println("Player doesnt exist!");
             }
         }

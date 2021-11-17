@@ -9,8 +9,7 @@ public class ClientSideListener implements Runnable {
 
     @Override
     public void run() {
-        boolean keepgoing = true;
-        while (keepgoing) {
+        while (true) {
             if (client.reader.hasNextLine()) {
                 String serverUpdate = client.reader.nextLine();
                 String[] updateSubstrings = serverUpdate.split(" ");
@@ -78,7 +77,7 @@ public class ClientSideListener implements Runnable {
                             System.out.println(updateSubstrings[i + 2] + " ");
                         }
                         System.out.println();
-                        continue;
+
                 }
             }
         }
