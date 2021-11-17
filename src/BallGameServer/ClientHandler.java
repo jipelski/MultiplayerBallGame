@@ -134,7 +134,6 @@ public class ClientHandler implements Runnable {
                 updateAll("left " + playerId + " " + true + " " + getPlayerWithBall());
             else
                 updateAll("left " + playerId + " " + false);
-
         }
     }
 }

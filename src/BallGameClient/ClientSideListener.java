@@ -74,9 +74,9 @@ public class ClientSideListener implements Runnable {
                     case "playerslist":
                         System.out.println("List of connected players: ");
                         for (int i = 0; i < Integer.parseInt(updateSubstrings[1]); i++) {
-                            System.out.println(updateSubstrings[i + 2] + " ");
+                            System.out.print(updateSubstrings[i + 2] + " ");
                         }
-                        System.out.println();
+                        System.out.println("\n");
 
                 }
             }

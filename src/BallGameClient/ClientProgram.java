@@ -56,7 +56,6 @@ public class ClientProgram {
                     default:
                         System.out.println("No such command, enter 'help' for the list of commands.\n");
                 }
-                //}
             }
         }
     }
