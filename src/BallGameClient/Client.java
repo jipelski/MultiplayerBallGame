@@ -21,13 +21,13 @@ public class Client implements AutoCloseable {
 
         // Parsing the response
         //playerId = Integer.parseInt(reader.nextLine());
-        reader.nextLine();
+        //reader.nextLine();
     }
 
-    public String pass(int passPlayer) {
+    public /*String*/ void pass(int passPlayer) {
         writer.println("PASS " + passPlayer);
-        String line = reader.nextLine();
-        return line;
+        //String line = reader.nextLine();
+        // return line;
     }
 
     public int ball() {
@@ -38,7 +38,7 @@ public class Client implements AutoCloseable {
 
     public void leave() {
         writer.println("LEAVE");
-        reader.nextLine();
+        //System.out.println(reader.nextLine());
     }
 
     @Override
