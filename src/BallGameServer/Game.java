@@ -10,7 +10,7 @@ import java.util.*;
 public class Game {
     public final Map<Integer, Player> players = new TreeMap<>();
 
-    public int latestId = 0;
+    public int latestId = 1;
     public boolean ballOwned = false;
 
 
@@ -56,12 +56,10 @@ public class Game {
                         ballOwned = true;
                     } else
                         ballOwned = false;
-                    //broadcast the passing of the ball to the other players and the leaving of the player
 
                 } else
                     players.remove(playerId);
 
-                //broadcast the leaving of the player
             } catch (Exception e) {
                 System.out.println(e);
                 System.out.println("Player doesnt exist!");
@@ -78,7 +76,6 @@ public class Game {
      * is called.
      */
     public void passBall(int previousPossessor, int newPossessor) {
-        //check if the newPossessor is still connected to the game
         try {
             for (Player player : players.values()) {
                 if (player.getId() == newPossessor) {

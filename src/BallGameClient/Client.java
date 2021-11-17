@@ -6,39 +6,33 @@ import java.util.Scanner;
 
 public class Client implements AutoCloseable {
     final int port = 8888;
-    int playerId = -1;
-
     final Scanner reader;
     private final PrintWriter writer;
+    int playerId = -1;
 
     public Client() throws Exception {
-        // Connecting to the server and creating objects for communications
         Socket socket = new Socket("localhost", port);
-        reader = new Scanner(socket.getInputStream());
 
-        // Automatically flushes the stream with every command
+        reader = new Scanner(socket.getInputStream());
         writer = new PrintWriter(socket.getOutputStream(), true);
 
-        // Parsing the response
-        //playerId = Integer.parseInt(reader.nextLine());
-        //reader.nextLine();
     }
 
-    public /*String*/ void pass(int passPlayer) {
+    public void pass(int passPlayer) {
         writer.println("PASS " + passPlayer);
-        //String line = reader.nextLine();
-        // return line;
+
     }
 
-    public int ball() {
-        writer.println("show_ball");
-        int playerIdwithBall = reader.nextInt();
-        return playerIdwithBall;
+    public void ball() {
+        writer.println("BALL");
+    }
+
+    public void connectedPlayers() {
+        writer.println("PLAYERS");
     }
 
     public void leave() {
         writer.println("LEAVE");
-        //System.out.println(reader.nextLine());
     }
 
     @Override

@@ -33,7 +33,6 @@ public class ServerProgram {
             System.out.println("Server running. Waiting for players...");
             while (true) {
 
-                //TODO: Synchronize the threads to dont lose or get the wrong player Id
                 Socket socket = serverSocket.accept();
                 new Thread(new ClientHandler(socket, game)).start();
             }

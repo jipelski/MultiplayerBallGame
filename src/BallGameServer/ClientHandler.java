@@ -18,6 +18,35 @@ public class ClientHandler implements Runnable {
         this.game = game;
     }
 
+    void updateAll(String msg) {
+        for (Player player : game.players.values()
+        ) {
+            PrintWriter printWriter = player.writer;
+            printWriter.println(msg);
+        }
+    }
+
+    String getStringofPlayers() {
+        StringBuilder stringOfPlayers = new StringBuilder();
+        for (Player player : game.players.values()
+        ) {
+            stringOfPlayers.append(player.id).append(" ");
+        }
+        return stringOfPlayers.toString();
+    }
+
+    int getPlayerWithBall() {
+        int ballOwner = -1;
+        for (Player player : game.players.values()
+        ) {
+            if (player.hasBall) {
+                ballOwner = player.id;
+                break;
+            }
+        }
+        return ballOwner;
+    }
+
     @Override
     public void run() {
 
@@ -29,33 +58,13 @@ public class ClientHandler implements Runnable {
             playerId = player.id;
 
             System.out.println("Player " + playerId + " connected!");
-            player.writer.println("you");
-            player.writer.println(playerId);
+            player.writer.println("you " + playerId);
+
+            String updateMsg = "new " + playerId + " " + game.players.size() + " "
+                    + getStringofPlayers() + getPlayerWithBall();
 
 
-
-            for (Player player1 : game.players.values()
-            ) {
-
-
-                PrintWriter printWriter = player1.writer;
-                printWriter.println("new");
-                printWriter.println(playerId);
-                printWriter.println(game.players.size());
-                System.out.println("Currently playing " + game.players.size() + " players:");
-                int playerWithBall = -1;
-                for (Player player2 : game.players.values()
-                ) {
-                    printWriter.println(player2.getId());
-                    System.out.print(player2.getId() + " ");
-                    if (player2.hasBall) {
-                        playerWithBall = player2.id;
-                    }
-                }
-                System.out.println();
-                printWriter.println(playerWithBall);
-                System.out.println(playerWithBall + " has the ball");
-            }
+            updateAll(updateMsg);
 
             try {
                 boolean keepGoing = true;
@@ -70,54 +79,39 @@ public class ClientHandler implements Runnable {
                                 try {
                                     int passPlayer = Integer.parseInt(substrings[1]);
                                     boolean passedBall = false;
-                                    for (Player player1 : game.players.values())
-                                        if (player1.getId() == passPlayer) {
-                                            game.passBall(playerId, passPlayer);
-                                            writer.println("passsuccess");
-                                            writer.println(passPlayer);
-                                            passedBall = true;
-                                            for (Player player2 : game.players.values()
-                                            ) {
-                                                PrintWriter printWriter = player2.writer;
-                                                if(player2.id == passPlayer)
-                                                {
-                                                    printWriter.println("passreceived");
-                                                    printWriter.println(player.id);
-                                                }
-                                                else
-                                                {
-                                                    printWriter.println("pass");
-                                                    printWriter.println(player.id);
-                                                    printWriter.println(passPlayer);
-                                                }
 
+                                    if (game.players.containsKey(passPlayer)) {
+                                        game.passBall(playerId, passPlayer);
+                                        passedBall = true;
+                                        writer.println("passSuccess " + passPlayer);
+                                        updateAll("pass " + player.id + " " + passPlayer);
+                                        PrintWriter writer1 = game.players.get(passPlayer).writer;
+                                        writer1.println("passReceived " + playerId);
 
-                                            }
-                                            System.out.println(player.id + " passed the ball to " + passPlayer);
-                                        }
-                                    if (!passedBall)
-                                    {
-                                        writer.println("passnoplayer");}
+                                    }
+                                    if (!passedBall) {
+                                        writer.println("passNoPlayer " + game.players.size() + " " + getStringofPlayers());
+
+                                    }
                                 } catch (Exception e) {
 
-                                    writer.println("passwrongcommand");
+                                    writer.println("passWrongCommand");
                                 }
-                            } else
-                            {
+                            } else {
 
-                                writer.println("passnoball");
+                                writer.println("passNoball " + getPlayerWithBall());
                             }
                             break;
 
                         case "leave":
-                            //writer.println("goodbye");
                             keepGoing = false;
                             break;
-                        case "show_ball":
-                            for (Player player1 : game.players.values()) {
-                                if (player1.hasBall)
-                                    writer.println(player1.getId());
-                            }
+
+                        case "ball":
+                            writer.println("ballOwner " + getPlayerWithBall());
+                            break;
+                        case "players":
+                            writer.println("playersList " + game.players.size() + " " + getStringofPlayers());
                             break;
 
                     }
@@ -130,29 +124,17 @@ public class ClientHandler implements Runnable {
         } catch (Exception ignored) {
         } finally {
             boolean hadBall = false;
-            if(game.players.get(playerId).hasBall)
+            if (game.players.get(playerId).hasBall)
                 hadBall = true;
             game.playerLeft(playerId);
 
             System.out.println("Player " + playerId + " disconnected.");
-            for (Player player : game.players.values()
-            ) {
-                PrintWriter printWriter = player.writer;
-                printWriter.println("left");
-                printWriter.println(playerId);
-                printWriter.println(hadBall);
-                if(hadBall)
-                {
-                    for (Player player2 : game.players.values()) {
-                        if (player2.hasBall) {
-                            printWriter.println(player2.getId());
-                            System.out.println(player2.getId() + " has the ball.");
-                        }
-                    }
-                }
 
-            }
-            //broadcast to all players
+            if (hadBall)
+                updateAll("left " + playerId + " " + true + " " + getPlayerWithBall());
+            else
+                updateAll("left " + playerId + " " + false);
+
         }
     }
 }
