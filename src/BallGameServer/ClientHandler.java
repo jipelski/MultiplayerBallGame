@@ -4,7 +4,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-/** Class that will handle the client communication. */
+/**
+ * Class that will handle the client communication.
+ */
 
 public class ClientHandler implements Runnable {
 
@@ -20,29 +22,27 @@ public class ClientHandler implements Runnable {
     public void run() {
 
         int playerId = -1;
-        try(
+        try (
                 Scanner scanner = new Scanner(socket.getInputStream());
-                PrintWriter writer = new PrintWriter(socket.getOutputStream(), true))
-        {
+                PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
             Player player = game.createPlayer(writer);
             playerId = player.id;
 
             System.out.println("Player " + playerId + " connected!");
 
             player.writer.println("You are player number " + playerId);
-            for (Player player1: game.players.values()
+            for (Player player1 : game.players.values()
             ) {
                 PrintWriter printWriter = player1.writer;
                 printWriter.println(playerId + " joined!");
                 printWriter.println("Currently playing " + game.players.size() + " players");
                 System.out.println("Currently playing " + game.players.size() + " players:");
                 int playerWithBall = -1;
-                for (Player player2: game.players.values()
+                for (Player player2 : game.players.values()
                 ) {
                     printWriter.println(player2.getId());
                     System.out.print(player2.getId() + " ");
-                    if(player2.hasBall)
-                    {
+                    if (player2.hasBall) {
                         playerWithBall = player2.id;
                     }
                 }
@@ -51,19 +51,16 @@ public class ClientHandler implements Runnable {
                 System.out.println(playerWithBall + " has the ball");
             }
 
-            try{
+            try {
                 boolean keepGoing = true;
 
-                while(keepGoing)
-                {
+                while (keepGoing) {
                     String line = scanner.nextLine();
                     String[] substrings = line.split(" ");
-                    switch (substrings[0].toLowerCase())
-                    {
+                    switch (substrings[0].toLowerCase()) {
 
                         case "pass":
-                            if(game.players.get(playerId).hasBall)
-                            {
+                            if (game.players.get(playerId).hasBall) {
                                 try {
                                     int passPlayer = Integer.parseInt(substrings[1]);
                                     boolean passedBall = false;
@@ -72,8 +69,8 @@ public class ClientHandler implements Runnable {
                                             game.passBall(playerId, passPlayer);
                                             writer.println("You passed the ball to " + game.players.get(passPlayer).getId());
                                             passedBall = true;
-                                            for (Player player2: game.players.values()
-                                                 ) {
+                                            for (Player player2 : game.players.values()
+                                            ) {
                                                 PrintWriter printWriter = player2.writer;
                                                 printWriter.println(player.id + " passed the ball to " + passPlayer + "!");
 
@@ -82,13 +79,10 @@ public class ClientHandler implements Runnable {
                                         }
                                     if (!passedBall)
                                         writer.println("No such player!");
-                                }
-                                catch (Exception e)
-                                {
+                                } catch (Exception e) {
                                     writer.println("Please write pass and the id of the player. The Id must be a number.");
                                 }
-                            }
-                            else
+                            } else
                                 writer.println("You don't have the ball!");
                             break;
 
@@ -97,44 +91,39 @@ public class ClientHandler implements Runnable {
                             keepGoing = false;
                             break;
                         case "show_ball":
-                            for (Player player1 : game.players.values())
-                            {writer.println(player1.getId());
+                            for (Player player1 : game.players.values()) {
+                                writer.println(player1.getId());
                                 if (player1.hasBall)
-                            writer.println(player1.getId() + " has the ball.");}
+                                    writer.println(player1.getId() + " has the ball.");
+                            }
                             break;
 
                         default:
                             //throw new Exception("Unknown command: " + substrings[0]);
                             writer.println("No such command! Only commands available are 'leave' to quit the game," +
-                                    "'show_ball' to show who has the ball and 'pass' + the id of the player" +
-                                    "you want to pass the ball to!");
+                                            "'show_ball' to show who has the ball and 'pass' + the id of the player" +
+                                            "you want to pass the ball to!");
                             break;
                     }
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 writer.println("ERROR " + e.getMessage());
                 socket.close();
             }
 
-        }
-        catch (Exception ignored)
-        {
-        }
-        finally {
+        } catch (Exception ignored) {
+        } finally {
             game.playerLeft(playerId);
 
             System.out.println("Player " + playerId + " disconnected.");
             for (Player player : game.players.values()
-                 ) {
+            ) {
                 PrintWriter printWriter = player.writer;
                 printWriter.println("Player " + playerId + " has left the game!");
-                for (Player player2: game.players.values()
+                for (Player player2 : game.players.values()
                 ) {
                     printWriter.println(player2.getId());
-                    if(player2.hasBall)
-                    {
+                    if (player2.hasBall) {
                         printWriter.println(player2.getId() + " has the ball.");
                         System.out.println(player2.getId() + " has the ball.");
                     }
