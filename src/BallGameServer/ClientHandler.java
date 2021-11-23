@@ -123,9 +123,7 @@ public class ClientHandler implements Runnable {
 
         } catch (Exception ignored) {
         } finally {
-            boolean hadBall = false;
-            if (game.players.get(playerId).hasBall)
-                hadBall = true;
+            boolean hadBall = game.players.get(playerId).hasBall;
             game.playerLeft(playerId);
 
             System.out.println("Player " + playerId + " disconnected.");

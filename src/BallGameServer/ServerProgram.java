@@ -31,6 +31,7 @@ public class ServerProgram {
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("Server running. Waiting for players...");
+            
             while (true) {
 
                 Socket socket = serverSocket.accept();
