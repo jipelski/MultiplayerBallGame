@@ -40,7 +40,7 @@ public class ClientProgram {
                         }
 
                     }
-                    case "whoami" -> System.out.println("You are player " + client.playerId);
+                    case "whoami" -> System.out.println("You are player " + client.playerId + "\n");
                     case "ball" -> client.ball();
                     case "list" -> client.connectedPlayers();
                     case "help" -> System.out.println("""
