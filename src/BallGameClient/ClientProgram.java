@@ -13,6 +13,7 @@ public class ClientProgram {
                     Available commands are:
                     'pass' to pass the ball to a new player
                     'ball' to show who has the ball
+                    'whoAmI' to show what player number you have
                     'list' to show a list of connected players
                     'help' to show the available commands
                     'leave' to exit the game
@@ -27,7 +28,7 @@ public class ClientProgram {
                         client.leave();
                         connected = false;
                         t.stop();
-                       // continue;
+
                     }
                     case "pass" -> {
                         System.out.println("Enter the id of the player you want to pass the ball to:");
@@ -37,21 +38,20 @@ public class ClientProgram {
                         } catch (Exception e) {
                             System.out.println("No such player!\n");
                         }
-                        //continue;
+
                     }
-                    case "ball" -> //continue;
-                            client.ball();
-                    case "list" -> //continue;
-                            client.connectedPlayers();
-                    case "help" -> //continue;
-                            System.out.println("""
-                                    Available commands are:
-                                    'pass' to pass the ball to a new player
-                                    'ball' to show who has the ball
-                                    'list' to show a list of connected players
-                                    'help' to show the available commands
-                                    'leave' to exit the game
-                                    """);
+                    case "whoami" -> System.out.println("You are player " + client.playerId);
+                    case "ball" -> client.ball();
+                    case "list" -> client.connectedPlayers();
+                    case "help" -> System.out.println("""
+                            Available commands are:
+                            'pass' to pass the ball to a new player
+                            'ball' to show who has the ball
+                            'whoAmI' to show what player number you have
+                            'list' to show a list of connected players
+                            'help' to show the available commands
+                            'leave' to exit the game
+                            """);
                     default -> System.out.println("No such command, enter 'help' for the list of commands.\n");
                 }
             }

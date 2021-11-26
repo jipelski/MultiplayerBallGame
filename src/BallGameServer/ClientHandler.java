@@ -26,7 +26,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    String getStringofPlayers() {
+    String getStringOfPlayers() {
         StringBuilder stringOfPlayers = new StringBuilder();
         for (Player player : game.players.values()
         ) {
@@ -61,7 +61,7 @@ public class ClientHandler implements Runnable {
             player.writer.println("you " + playerId);
 
             String updateMsg = "new " + playerId + " " + game.players.size() + " "
-                    + getStringofPlayers() + getPlayerWithBall();
+                    + getStringOfPlayers() + getPlayerWithBall();
 
 
             updateAll(updateMsg);
@@ -87,10 +87,11 @@ public class ClientHandler implements Runnable {
                                         updateAll("pass " + player.id + " " + passPlayer);
                                         PrintWriter writer1 = game.players.get(passPlayer).writer;
                                         writer1.println("passReceived " + playerId);
+                                        System.out.println(playerId + " passed the ball to " + passPlayer);
 
                                     }
                                     if (!passedBall) {
-                                        writer.println("passNoPlayer " + game.players.size() + " " + getStringofPlayers());
+                                        writer.println("passNoPlayer " + game.players.size() + " " + getStringOfPlayers());
 
                                     }
                                 } catch (Exception e) {
@@ -111,7 +112,7 @@ public class ClientHandler implements Runnable {
                             writer.println("ballOwner " + getPlayerWithBall());
                             break;
                         case "players":
-                            writer.println("playersList " + game.players.size() + " " + getStringofPlayers());
+                            writer.println("playersList " + game.players.size() + " " + getStringOfPlayers());
                             break;
 
                     }
@@ -128,8 +129,12 @@ public class ClientHandler implements Runnable {
 
             System.out.println("Player " + playerId + " disconnected.");
 
+
             if (hadBall)
+            {
                 updateAll("left " + playerId + " " + true + " " + getPlayerWithBall());
+                System.out.println("Player " + getPlayerWithBall() + " now has the ball.");
+            }
             else
                 updateAll("left " + playerId + " " + false);
         }
