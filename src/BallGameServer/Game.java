@@ -75,19 +75,23 @@ public class Game {
      * is called.
      */
     public void passBall(int previousPossessor, int newPossessor) {
-        try {
-            for (Player player : players.values()) {
-                if (player.getId() == newPossessor) {
-                    if (previousPossessor != -1)
-                        players.get(previousPossessor).hasBall = false;
-                    players.get(newPossessor).hasBall = true;
+        synchronized (players)
+        {
+            try {
+                for (Player player : players.values()) {
+                    if (player.getId() == newPossessor) {
+                        if (previousPossessor != -1)
+                            players.get(previousPossessor).hasBall = false;
+                        players.get(newPossessor).hasBall = true;
+                    }
                 }
+
+
+            } catch (Exception e) {
+                playerLeft(newPossessor);
             }
-
-
-        } catch (Exception e) {
-            playerLeft(newPossessor);
         }
+
 
     }
 }
