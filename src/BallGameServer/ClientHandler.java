@@ -4,28 +4,139 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-/** Class that will handle the client commands. */
+/**
+ * Class that will handle the client communication.
+ */
 
 public class ClientHandler implements Runnable {
 
     private final Socket socket;
+    private final Game game;
 
-    Broadcast broadcast = new Broadcast("Ia");
-
-    public ClientHandler(Socket socket) {
+    public ClientHandler(Socket socket, Game game) {
         this.socket = socket;
+        this.game = game;
+    }
+
+    void updateAll(String msg) {
+        for (Player player : game.players.values()
+        ) {
+            PrintWriter printWriter = player.writer;
+            printWriter.println(msg);
+        }
+    }
+
+    String getStringOfPlayers() {
+        StringBuilder stringOfPlayers = new StringBuilder();
+        for (Player player : game.players.values()
+        ) {
+            stringOfPlayers.append(player.id).append(" ");
+        }
+        return stringOfPlayers.toString();
+    }
+
+    int getPlayerWithBall() {
+        int ballOwner = -1;
+        for (Player player : game.players.values()
+        ) {
+            if (player.hasBall) {
+                ballOwner = player.id;
+                break;
+            }
+        }
+        return ballOwner;
     }
 
     @Override
     public void run() {
-        try(
+
+        int playerId = -1;
+        try (
                 Scanner scanner = new Scanner(socket.getInputStream());
-                PrintWriter writer = new PrintWriter(socket.getOutputStream(), true))
-        {
-            broadcast.broadcastJoin();
-        }
-        catch (Exception e)
-        {
+                PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+            Player player = game.createPlayer(writer);
+            playerId = player.id;
+
+            System.out.println("Player " + playerId + " connected!");
+            player.writer.println("you " + playerId);
+
+            String updateMsg = "new " + playerId + " " + game.players.size() + " "
+                    + getStringOfPlayers() + getPlayerWithBall();
+
+
+            updateAll(updateMsg);
+
+            try {
+                boolean keepGoing = true;
+
+                while (keepGoing) {
+                    String line = scanner.nextLine();
+                    String[] substrings = line.split(" ");
+                    switch (substrings[0].toLowerCase()) {
+
+                        case "pass":
+                            if (game.players.get(playerId).hasBall) {
+                                try {
+                                    int passPlayer = Integer.parseInt(substrings[1]);
+                                    boolean passedBall = false;
+
+                                    if (game.players.containsKey(passPlayer)) {
+                                        game.passBall(playerId, passPlayer);
+                                        passedBall = true;
+                                        writer.println("passSuccess " + passPlayer);
+                                        updateAll("pass " + player.id + " " + passPlayer);
+                                        PrintWriter writer1 = game.players.get(passPlayer).writer;
+                                        writer1.println("passReceived " + playerId);
+                                        System.out.println(playerId + " passed the ball to " + passPlayer);
+
+                                    }
+                                    if (!passedBall) {
+                                        writer.println("passNoPlayer " + game.players.size() + " " + getStringOfPlayers());
+
+                                    }
+                                } catch (Exception e) {
+
+                                    writer.println("passWrongCommand");
+                                }
+                            } else {
+
+                                writer.println("passNoball " + getPlayerWithBall());
+                            }
+                            break;
+
+                        case "leave":
+                            keepGoing = false;
+                            break;
+
+                        case "ball":
+                            writer.println("ballOwner " + getPlayerWithBall());
+                            break;
+                        case "players":
+                            writer.println("playersList " + game.players.size() + " " + getStringOfPlayers());
+                            break;
+
+                    }
+                }
+            } catch (Exception e) {
+                writer.println("ERROR " + e.getMessage());
+                socket.close();
+            }
+
+        } catch (Exception ignored) {
+        } finally {
+            boolean hadBall = game.players.get(playerId).hasBall;
+            game.playerLeft(playerId);
+
+            System.out.println("Player " + playerId + " disconnected.");
+
+
+            if (hadBall)
+            {
+                updateAll("left " + playerId + " " + true + " " + getPlayerWithBall());
+                System.out.println("Player " + getPlayerWithBall() + " now has the ball.");
+            }
+            else
+                updateAll("left " + playerId + " " + false);
         }
     }
 }
