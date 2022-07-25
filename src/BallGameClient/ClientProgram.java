@@ -2,6 +2,11 @@ package BallGameClient;
 
 import java.util.Scanner;
 
+/** Main class of the Client Program. Creates a Client object.
+ *  Creates and starts a ClientSideListener thread.
+ *  Listens for player input using a scanner. Handles the input and calls the appropriate Client methods.
+ *  Gives a list of possible commands to the player.*/
+
 public class ClientProgram {
     public static void main(String[] args) throws Exception {
         try (Client client = new Client()) {

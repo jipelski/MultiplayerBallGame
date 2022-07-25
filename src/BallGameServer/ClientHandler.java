@@ -5,7 +5,10 @@ import java.net.Socket;
 import java.util.Scanner;
 
 /**
- * Class that will handle the client communication.
+ * Class that handles the client communication and creates a player object.
+ * It listens for player commands through the socket.
+ * Handles those commands and sends a response back to the player client.
+ * Sends update messages based on the game changes.
  */
 
 public class ClientHandler implements Runnable {
@@ -18,7 +21,8 @@ public class ClientHandler implements Runnable {
         this.game = game;
     }
 
-    void updateAll(String msg) {
+    /** Sends a message update to all the players using their writers. */
+    private void updateAll(String msg) {
         for (Player player : game.players.values()
         ) {
             PrintWriter printWriter = player.writer;
@@ -26,7 +30,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    String getStringOfPlayers() {
+    private String getStringOfPlayers() {
         StringBuilder stringOfPlayers = new StringBuilder();
         for (Player player : game.players.values()
         ) {
@@ -34,8 +38,8 @@ public class ClientHandler implements Runnable {
         }
         return stringOfPlayers.toString();
     }
-
-    int getPlayerWithBall() {
+    /** Returns an int that corresponds with the player id of the player in possession of the ball.*/
+    private int getPlayerWithBall() {
         int ballOwner = -1;
         for (Player player : game.players.values()
         ) {
@@ -58,9 +62,9 @@ public class ClientHandler implements Runnable {
             playerId = player.id;
 
             System.out.println("Player " + playerId + " connected!");
-            player.writer.println("you " + playerId);
+            player.writer.println("YOU " + playerId);
 
-            String updateMsg = "new " + playerId + " " + game.players.size() + " "
+            String updateMsg = "NEW " + playerId + " " + game.players.size() + " "
                     + getStringOfPlayers() + getPlayerWithBall();
 
 
@@ -83,15 +87,15 @@ public class ClientHandler implements Runnable {
                                     if (game.players.containsKey(passPlayer)) {
                                         game.passBall(playerId, passPlayer);
                                         passedBall = true;
-                                        writer.println("passSuccess " + passPlayer);
-                                        updateAll("pass " + player.id + " " + passPlayer);
+                                        writer.println("PASSSUCCESS " + passPlayer);
+                                        updateAll("PASS " + player.id + " " + passPlayer);
                                         PrintWriter writer1 = game.players.get(passPlayer).writer;
-                                        writer1.println("passReceived " + playerId);
+                                        writer1.println("PASSRECEIVED " + playerId);
                                         System.out.println(playerId + " passed the ball to " + passPlayer);
 
                                     }
                                     if (!passedBall) {
-                                        writer.println("passNoPlayer " + game.players.size() + " " + getStringOfPlayers());
+                                        writer.println("PASSNOPLAYER " + game.players.size() + " " + getStringOfPlayers());
 
                                     }
                                 } catch (Exception e) {
@@ -100,7 +104,7 @@ public class ClientHandler implements Runnable {
                                 }
                             } else {
 
-                                writer.println("passNoball " + getPlayerWithBall());
+                                writer.println("PASSNOBALL " + getPlayerWithBall());
                             }
                             break;
 
@@ -109,10 +113,10 @@ public class ClientHandler implements Runnable {
                             break;
 
                         case "ball":
-                            writer.println("ballOwner " + getPlayerWithBall());
+                            writer.println("BALLOWNER " + getPlayerWithBall());
                             break;
                         case "players":
-                            writer.println("playersList " + game.players.size() + " " + getStringOfPlayers());
+                            writer.println("PLAYERSLIST " + game.players.size() + " " + getStringOfPlayers());
                             break;
 
                     }
@@ -124,6 +128,8 @@ public class ClientHandler implements Runnable {
 
         } catch (Exception ignored) {
         } finally {
+
+            //Checks if the player had the ball and calls the playerLeft method to remove it from the list of players.
             boolean hadBall = game.players.get(playerId).hasBall;
             game.playerLeft(playerId);
 
@@ -132,11 +138,14 @@ public class ClientHandler implements Runnable {
 
             if (hadBall)
             {
-                updateAll("left " + playerId + " " + true + " " + getPlayerWithBall());
-                System.out.println("Player " + getPlayerWithBall() + " now has the ball.");
+                updateAll("LEFT " + playerId + " " + true + " " + getPlayerWithBall());
+                if(getPlayerWithBall()!=-1)
+                    System.out.println("Player " + getPlayerWithBall() + " now has the ball.");
+                else
+                    System.out.println("No players in the game. When a player will join the ball will be passed to them.");
             }
             else
-                updateAll("left " + playerId + " " + false);
+                updateAll("LEFT " + playerId + " " + false);
         }
     }
 }

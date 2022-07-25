@@ -1,5 +1,7 @@
 package BallGameServer;
 
+import BallGameClient.ClientProgram;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -31,11 +33,11 @@ public class ServerProgram {
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("Server running. Waiting for players...");
-
             //noinspection InfiniteLoopStatement
             while (true) {
                 Socket socket = serverSocket.accept();
                 new Thread(new ClientHandler(socket, game)).start();
+
             }
         } catch (IOException e) {
             e.printStackTrace();

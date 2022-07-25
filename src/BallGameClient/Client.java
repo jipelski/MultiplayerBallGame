@@ -4,6 +4,13 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
+/** Creates a socket and connects to the server using it.
+ *  Creates a reader and a writer object that will be used to communicate with the server.
+ *  Contains methods for each available command the player can use.
+ *  Those commands send messages based on the communication protocol to the server.
+ * */
+
+
 public class Client implements AutoCloseable {
     final int port = 8888;
     final Scanner reader;

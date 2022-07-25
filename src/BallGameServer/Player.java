@@ -3,7 +3,7 @@ package BallGameServer;
 import java.io.PrintWriter;
 
 /**
- * Creates a Player object
+ * Player Object Class
  */
 
 public class Player {

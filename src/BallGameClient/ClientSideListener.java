@@ -1,5 +1,7 @@
 package BallGameClient;
 
+/** Listens to messages from the server, handles the information and displays it in a user-friendly atmosphere.*/
+
 public class ClientSideListener implements Runnable {
     Client client;
 

@@ -4,7 +4,7 @@ import java.io.PrintWriter;
 import java.util.*;
 
 /**
- * Game class keeps track of players, creates and removes players and also allows passing.
+ * Game class keeps track of players and defines the methods for creating players, removing players and passing the ball.
  */
 
 public class Game {
