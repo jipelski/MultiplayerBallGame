@@ -15,7 +15,7 @@ public class Client implements AutoCloseable {
     final int port = 8888;
     final Scanner reader;
     private final PrintWriter writer;
-    int playerId = -1;
+    public int playerId = -1;
 
     public Client() throws Exception {
         Socket socket = new Socket("localhost", port);
@@ -29,6 +29,8 @@ public class Client implements AutoCloseable {
         writer.println("PASS " + passPlayer);
 
     }
+
+    public void setPlayerId(int playerIdInt) {playerId = playerIdInt;}
 
     public void ball() {
         writer.println("BALL");
