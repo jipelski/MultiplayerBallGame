@@ -32,7 +32,7 @@ public class ClientProgram {
                         System.out.println("Good bye!");
                         client.leave();
                         connected = false;
-                        t.stop();
+                        t.interrupt();
 
                     }
                     case "pass" -> {
