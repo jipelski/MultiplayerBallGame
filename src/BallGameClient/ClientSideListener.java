@@ -5,7 +5,7 @@ package BallGameClient;
 public class ClientSideListener implements Runnable {
     Client client;
 
-    ClientSideListener(Client client) {
+    public ClientSideListener(Client client) {
         this.client = client;
     }
 
