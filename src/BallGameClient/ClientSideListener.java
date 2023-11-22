@@ -18,7 +18,8 @@ public class ClientSideListener implements Runnable {
                 String[] updateSubstrings = serverUpdate.split(" ");
                 switch (updateSubstrings[0].toLowerCase()) {
                     case "you" -> {
-                        client.playerId = Integer.parseInt(updateSubstrings[1]);
+                        //client.playerId = Integer.parseInt(updateSubstrings[1]);
+                        client.setPlayerId(Integer.parseInt(updateSubstrings[1]));
                         System.out.println("You are player number " + client.playerId + "\n");
                     }
                     case "new" -> {
