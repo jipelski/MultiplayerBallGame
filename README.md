@@ -8,7 +8,7 @@ The server manages the game's state and handles client connections. It includes 
 * **ServerProgram**: The entry point of the server. It initializes the server and listens for incoming client connections.
 * **ClientHandler**: Responsible for handling communication with connected clients.
 * **Game**: Manages the overall game state, including players and ball possession.
-* Player: Represents a player in the game.
+* **Player**: Represents a player in the game.
 
 ### Client Component ('BallGameClient')
 The client provides a user interface for players to interact with the game. It consists of these main classes:
@@ -16,7 +16,7 @@ The client provides a user interface for players to interact with the game. It c
 * **ClientProgram**: The main class for the client. It processes user input and interacts with the server.
 * **Client**: Handles the network connection to the server and sends commands based on user actions.
 * **ClientSideListener**: Listens to messages from the server and updates the client-side display.
-* 
+ 
 ## Setup Instructions
 
 ### Prerequisites
